@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:weatherapp/models/constants.dart';
+import 'package:weatherapp/welcome_screen.dart';
 
 class GetStarted extends StatefulWidget {
   const GetStarted({Key? key}) : super(key: key);
@@ -10,6 +12,7 @@ class GetStarted extends StatefulWidget {
 class _GetStartedState extends State<GetStarted> {
   @override
   Widget build(BuildContext context) {
+    Constants myConstants = Constants();
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -18,7 +21,7 @@ class _GetStartedState extends State<GetStarted> {
       body: Container(
         width: size.width,
         height: size.height,
-        color: Colors.red,
+        color: myConstants.primaryColor.withOpacity(0.5),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -26,15 +29,20 @@ class _GetStartedState extends State<GetStarted> {
             children: [
               Image.asset('assets/get-started.png'),
               const SizedBox(height: 30,),
-              Container(
-                height: 50,
-                width: size.width*0.7,
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                child: const Center(
-                  child: Text('Get Started',style: TextStyle(color: Colors.white,fontSize: 18),),
+              GestureDetector(
+                onTap: (){
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>WelcomeScreen()));
+                },
+                child: Container(
+                  height: 50,
+                  width: size.width*0.7,
+                  decoration: BoxDecoration(
+                    color: myConstants.primaryColor,
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: const Center(
+                    child: Text('Get Started',style: TextStyle(color: Colors.white,fontSize: 18),),
+                  ),
                 ),
               )
             ],
