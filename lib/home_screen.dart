@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int humidity=0;
   int windSpeed = 0;
 
-  var currentDate = 'Loadind..';
+  var currentDate = 'Loading..';
   String imageUrl = '';
   int woeid= 44418; //Id of london
   String location = 'London';//default city
@@ -43,44 +43,37 @@ class _HomeScreenState extends State<HomeScreen> {
   void fetchLocation(String location) async{
     var searchResult = await http.get(Uri.parse(totalUrl+location));
     var result = json.decode(searchResult.body);
-    setState(() {
 
-    });
-    print(result);
+      setState(() {
+        woeid = result['woeid'];
+      });
+    fetchWeatherData(); // Fetch weather data after getting the woeid
+
   }
 
   void fetchWeatherData() async {
-    var weatherResult =
-    await http.get(Uri.parse(totalUrl + woeid.toString()));
+    var weatherResult = await http.get(Uri.parse(totalUrl + woeid.toString()));
     var result = json.decode(weatherResult.body);
-    var consolidatedWeather = result['consolidated_weather'];
+    var currentWeather = result['current'];
 
     setState(() {
-      for (int i = 0; i < 7; i++) {
-        consolidatedWeather.add(consolidatedWeather[
-        i]); //this takes the consolidated weather for the next six days for the location searched
-      }
-      //The index 0 referes to the first entry which is the current day. The next day will be index 1, second day index 2 etc...
-      temperature = consolidatedWeather[0]['the_temp'].round();
-      weatherStateName = consolidatedWeather[0]['weather_state_name'];
-      humidity = consolidatedWeather[0]['humidity'].round();
-      windSpeed = consolidatedWeather[0]['wind_speed'].round();
-      maxTemp = consolidatedWeather[0]['max_temp'].round();
+
+
+      temperature = currentWeather['temp_c'].round();
+      weatherStateName = currentWeather['condition']['text'];
+      humidity = currentWeather['humidity'];
+      windSpeed = currentWeather['wind_kph'].round();
+      maxTemp = currentWeather['feelslike_c'].round();
 
       //date formatting
-      var myDate = DateTime.parse(consolidatedWeather[0]['applicable_date']);
+      var myDate = DateTime.fromMillisecondsSinceEpoch(
+          currentWeather['last_updated_epoch'] * 1000);
       currentDate = DateFormat('EEEE, d MMMM').format(myDate);
 
       //set the image url
-      imageUrl = weatherStateName
-          .replaceAll(' ', '')
-          .toLowerCase(); //remove any spaces in the weather state name
-      //and change to lowercase because that is how we have named our images.
+      imageUrl = currentWeather['condition']['icon']
+          .replaceAll('//', 'https://');  //remove any spaces in the weather state name
 
-      consolidatedWeatherList = consolidatedWeather
-          .toSet()
-          .toList(); //Remove any instances of dublicates from our
-      //consolidated weather LIST
     });
   }
 
@@ -209,10 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     left: 20,
                     child: imageUrl == ''
                         ? const Text('')
-                        : Image.asset(
-                      'assets/' + imageUrl + '.png',
-                      width: 150,
-                    ),
+                        : Image.network(imageUrl,width: 150,)
                   ),
                   Positioned(
                     bottom: 30,
