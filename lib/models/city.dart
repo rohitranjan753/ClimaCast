@@ -20,7 +20,7 @@ class City{
         isDefault: false),
     City(
         isSelected: false,
-        city: 'Delhi',
+        city: 'Kolkata',
         country: 'India',
         isDefault: false),
     City(
