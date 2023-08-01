@@ -139,9 +139,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
                 child: Image.asset(
-                  'assets/profile.png',
-                  width: 40,
-                  height: 40,
+                  'assets/man.png',
+                  width: 50,
+                  height: 50,
                 ),
               ),
               //our location dropdown
@@ -302,14 +302,14 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
-                  'Today',
+                  'Today\'s forecasting',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
                   ),
                 ),
                 Text(
-                  'Next 7 Days',
+                  '24 Hrs',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 18,
