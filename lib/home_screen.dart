@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   var currentDate = 'Loading..';
   String imageUrl = '';
-  int woeid= 44418; //Id of london
+
   String location = 'London';//default city
 
   //get the cities and selected cities data
@@ -44,15 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
     var searchResult = await http.get(Uri.parse(totalUrl+location));
     var result = json.decode(searchResult.body);
 
-      setState(() {
-        woeid = result['woeid'];
-      });
+
+    setState(() {
+      location = result;
+    });
     fetchWeatherData(); // Fetch weather data after getting the woeid
 
   }
 
   void fetchWeatherData() async {
-    var weatherResult = await http.get(Uri.parse(totalUrl + woeid.toString()));
+    var weatherResult = await http.get(Uri.parse(totalUrl + location.toString()));
     var result = json.decode(weatherResult.body);
     var currentWeather = result['current'];
 
@@ -77,10 +78,28 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // Create a list to hold the 2-hour forecast data
+  List<dynamic> twoHourForecast = [];
+
+  // Fetch the 2-hour forecast data from the API
+  void fetchTwoHourForecast(location) async {
+    var forecastResult = await http.get(Uri.parse(
+        'http://api.weatherapi.com/v1/forecast.json?key=2d60b8a199f8462fb5361037230108&q=$location'));
+    var result = json.decode(forecastResult.body);
+    var forecastDay = result['forecast']['forecastday'];
+    print(forecastDay);
+    if (forecastDay.isNotEmpty) {
+      twoHourForecast = forecastDay[0]['hour'];
+      print(twoHourForecast);
+    }
+  }
+
+
   @override
   void initState() {
     fetchLocation(cities[0]);
     fetchWeatherData();
+    fetchTwoHourForecast(location);
 
     //For all the selected cities from our City model, extract the city and add it to our original cities list
     for (int i = 0; i < selectedCities.length; i++) {
@@ -149,6 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             location = newValue!;
                             fetchLocation(location);
                             fetchWeatherData();
+                            fetchTwoHourForecast(location);
                           });
                         }),
                   )
@@ -198,11 +218,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 clipBehavior: Clip.none,
                 children: [
                   Positioned(
-                    top: -40,
-                    left: 20,
-                    child: imageUrl == ''
-                        ? const Text('')
-                        : Image.network(imageUrl,width: 150,)
+                      top: -40,
+                      left: 20,
+                      child: imageUrl == ''
+                          ? const Text('')
+                          : Image.network(imageUrl,width: 150,)
                   ),
                   Positioned(
                     bottom: 30,
@@ -301,83 +321,45 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 20,
             ),
             Expanded(
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: consolidatedWeatherList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      String today = DateTime.now().toString().substring(0, 10);
-                      var selectedDay =
-                      consolidatedWeatherList[index]['applicable_date'];
-                      var futureWeatherName =
-                      consolidatedWeatherList[index]['weather_state_name'];
-                      var weatherUrl =
-                      futureWeatherName.replaceAll(' ', '').toLowerCase();
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: twoHourForecast.length,
+                itemBuilder: (BuildContext context, int index) {
+                  var hourForecast = twoHourForecast[index];
 
-                      var parsedDate = DateTime.parse(
-                          consolidatedWeatherList[index]['applicable_date']);
-                      var newDate = DateFormat('EEEE')
-                          .format(parsedDate)
-                          .substring(0, 3); //formateed date
-
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => DetailPage(consolidatedWeatherList: consolidatedWeatherList, selectedId: index, location: location,)));
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          margin: const EdgeInsets.only(
-                              right: 20, bottom: 10, top: 10),
-                          width: 80,
-                          decoration: BoxDecoration(
-                              color: selectedDay == today
-                                  ? myConstants.primaryColor
-                                  : Colors.white,
-                              borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                              boxShadow: [
-                                BoxShadow(
-                                  offset: const Offset(0, 1),
-                                  blurRadius: 5,
-                                  color: selectedDay == today
-                                      ? myConstants.primaryColor
-                                      : Colors.black54.withOpacity(.2),
-                                ),
-                              ]),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                consolidatedWeatherList[index]['the_temp']
-                                    .round()
-                                    .toString() +
-                                    "C",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  color: selectedDay == today
-                                      ? Colors.white
-                                      : myConstants.primaryColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Image.asset(
-                                'assets/' + weatherUrl + '.png',
-                                width: 30,
-                              ),
-                              Text(
-                                newDate,
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  color: selectedDay == today
-                                      ? Colors.white
-                                      : myConstants.primaryColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )
-                            ],
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          DateFormat('h:mm a').format(DateTime.parse(hourForecast['time'])),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      );
-                    }))
+                        const SizedBox(height: 8),
+                        Image.network(hourForecast['condition']['icon'].replaceAll('//', 'https://')),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${hourForecast['temp_c'].round()}°C',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            )
           ],
         ),
       ),
