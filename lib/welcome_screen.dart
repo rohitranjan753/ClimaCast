@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weatherapp/home_screen.dart';
 import 'package:weatherapp/models/city.dart';
 import 'package:weatherapp/models/constants.dart';
 
@@ -84,7 +85,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         backgroundColor: myConstants.secondaryColor,
         child: const Icon(Icons.pin_drop),
         onPressed: (){
-          print(selectedCity.length);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const HomeScreen()));
         },
       ),
     );
