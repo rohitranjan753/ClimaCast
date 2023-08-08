@@ -1,16 +1,10 @@
 # weatherapp
 
-A new Flutter project.
+ClimaCast, a new Flutter weather project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is still under construction😁
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Screenshot_2023-08-01-21-57-43-47_9ddbea12711bafff796e042aec31d432](https://github.com/rohitranjan753/ClimaCast/assets/57181495/ebe867aa-be5f-42aa-989f-505d8f8c236b)
+![Screenshot_2023-08-01-21-57-48-74_9ddbea12711bafff796e042aec31d432](https://github.com/rohitranjan753/ClimaCast/assets/57181495/05909262-f6f1-462d-bcb1-723de93626a3)
